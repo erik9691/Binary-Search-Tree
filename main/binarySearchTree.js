@@ -143,6 +143,54 @@ class Tree {
 			return this.find(value, node.rightChild);
 		}
 	}
+	levelOrder(callback, nodeQueue = [this.root]) {
+		if (nodeQueue.length > 0) {
+			if (nodeQueue[0].leftChild !== null) {
+				nodeQueue.push(nodeQueue[0].leftChild);
+			}
+			if (nodeQueue[0].rightChild !== null) {
+				nodeQueue.push(nodeQueue[0].rightChild);
+			}
+			callback(nodeQueue[0]);
+			nodeQueue.splice(0, 1);
+			if (nodeQueue.length > 0) {
+				this.levelOrder(callback, nodeQueue);
+			}
+		}
+	}
+	preOrder(callback, node = this.root) {
+		const leftTree = node.leftChild;
+		const rightTree = node.rightChild;
+		callback(node);
+		if (leftTree !== null) {
+			this.preOrder(callback, leftTree);
+		}
+		if (rightTree !== null) {
+			this.preOrder(callback, rightTree);
+		}
+	}
+	inOrder(callback, node = this.root) {
+		const leftTree = node.leftChild;
+		const rightTree = node.rightChild;
+		if (leftTree !== null) {
+			this.inOrder(callback, leftTree);
+		}
+		callback(node);
+		if (rightTree !== null) {
+			this.inOrder(callback, rightTree);
+		}
+	}
+	postOrder(callback, node = this.root) {
+		const leftTree = node.leftChild;
+		const rightTree = node.rightChild;
+		if (leftTree !== null) {
+			this.postOrder(callback, leftTree);
+		}
+		if (rightTree !== null) {
+			this.postOrder(callback, rightTree);
+		}
+		callback(node);
+	}
 }
 
 const tree = new Tree([1, 7, 4, 23, 8, 9, 4, 3, 5, 7, 9, 67, 6345, 324]);
@@ -160,5 +208,9 @@ const prettyPrint = (node, prefix = "", isLeft = true) => {
 	}
 };
 
-tree.delete(6);
+const printValue = (node) => {
+	console.log(node.value);
+};
+
 prettyPrint(tree.root);
+tree.postOrder(printValue);
