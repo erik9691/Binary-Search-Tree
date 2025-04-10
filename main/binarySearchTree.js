@@ -76,12 +76,11 @@ class Tree {
 			}
 		}
 	}
-
 	delete(value, node = this.root) {
 		if (node === null) {
 			throw new Error("Node not found!");
 		} else if (value === node.value) {
-			this.replaceWithNextBiggest(node);
+			replaceWithNextBiggest(node);
 		} else if (value < node.value) {
 			if (node.leftChild === null) {
 				throw new Error("Node not found!");
@@ -93,7 +92,7 @@ class Tree {
 				} else if (node.leftChild.leftChild === null && node.rightChild.rightChild !== null) {
 					node.leftChild = node.leftChild.rightChild;
 				} else {
-					this.replaceWithNextBiggest(node.leftChild);
+					replaceWithNextBiggest(node.leftChild);
 				}
 			} else {
 				this.delete(value, node.leftChild);
@@ -109,29 +108,29 @@ class Tree {
 				} else if (node.rightChild.leftChild === null && node.rightChild.rightChild !== null) {
 					node.rightChild = node.rightChild.rightChild;
 				} else {
-					this.replaceWithNextBiggest(node.rightChild);
+					replaceWithNextBiggest(node.rightChild);
 				}
 			} else {
 				this.delete(value, node.rightChild);
 			}
 		}
-	}
-	replaceWithNextBiggest(node) {
-		let parentOfNewNode = node.rightChild;
-		if (parentOfNewNode.leftChild === null) {
-			let newNodeValue = parentOfNewNode.value;
-			this.delete(parentOfNewNode.value);
-			node.value = newNodeValue;
-		} else {
-			while (parentOfNewNode.leftChild.leftChild !== null) {
-				parentOfNewNode = parentOfNewNode.leftChild;
-			}
-			let newNodeValue = parentOfNewNode.leftChild.value;
-			this.delete(parentOfNewNode.leftChild.value);
-			node.value = newNodeValue;
-		}
-	}
 
+		const replaceWithNextBiggest = (node) => {
+			let parentOfNewNode = node.rightChild;
+			if (parentOfNewNode.leftChild === null) {
+				let newNodeValue = parentOfNewNode.value;
+				this.delete(parentOfNewNode.value);
+				node.value = newNodeValue;
+			} else {
+				while (parentOfNewNode.leftChild.leftChild !== null) {
+					parentOfNewNode = parentOfNewNode.leftChild;
+				}
+				let newNodeValue = parentOfNewNode.leftChild.value;
+				this.delete(parentOfNewNode.leftChild.value);
+				node.value = newNodeValue;
+			}
+		};
+	}
 	find(value, node = this.root) {
 		if (node === null) {
 			return null;
@@ -191,6 +190,31 @@ class Tree {
 		}
 		callback(node);
 	}
+	height(value) {
+		const node = this.find(value);
+		if (node === null) {
+			return null;
+		}
+		const getHeight = (node) => {
+			if (node === null) return -1; // height of null is -1
+			const leftHeight = getHeight(node.leftChild);
+			const rightHeight = getHeight(node.rightChild);
+			return Math.max(leftHeight, rightHeight) + 1;
+		};
+
+		return getHeight(node);
+	}
+	depth(value, node = this.root, depthValue = 0) {
+		if (node === null) {
+			return null;
+		} else if (value === node.value) {
+			return depthValue;
+		} else if (value < node.value) {
+			return this.depth(value, node.leftChild, depthValue + 1);
+		} else {
+			return this.depth(value, node.rightChild, depthValue + 1);
+		}
+	}
 }
 
 const tree = new Tree([1, 7, 4, 23, 8, 9, 4, 3, 5, 7, 9, 67, 6345, 324]);
@@ -213,4 +237,4 @@ const printValue = (node) => {
 };
 
 prettyPrint(tree.root);
-tree.postOrder(printValue);
+console.log(tree.depth(23));
